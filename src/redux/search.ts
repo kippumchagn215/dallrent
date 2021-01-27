@@ -1,32 +1,31 @@
-import React from "react";
-import { Action } from "redux";
+import { Action, AnyAction } from "redux";
 import { RootState } from "./store";
 
-export interface guestInfo {
+// ACTION TYPES
+const SET_OPTION = "search/setOption";
+const SET_IS_LOADING = "search/setIsLoading";
+export interface IGuestInfo {
   location: string;
-  datestart: string;
-  contracttype: string;
+  dateStart: string;
+  contractType: string;
   guests: number;
 }
-
-const setOption = "search/setOption";
-interface setOptionAction extends Action<typeof setOption> {
-  payload: {
-    location: string;
-    datestart: string;
-    contracttype: string;
-    guests: number;
-  };
+interface ISetOptionAction extends Action<typeof SET_OPTION> {
+  payload: IGuestInfo;
 }
-export const selectOptionState = (rootState: RootState) => rootState.search;
-export const setoption = ({
+interface ISetIsLoadingAction extends Action<typeof SET_IS_LOADING> {
+  payload: boolean;
+}
+
+// ACTIONS
+export const setOptionAction = ({
   location,
-  datestart,
-  contracttype,
+  dateStart: datestart,
+  contractType: contracttype,
   guests,
-}: guestInfo) => {
+}: IGuestInfo) => {
   return {
-    type: setOption,
+    type: SET_OPTION,
     payload: {
       location,
       datestart,
@@ -35,28 +34,62 @@ export const setoption = ({
     },
   };
 };
-const initialstate = {
+
+export const setIsLoadingAction = (isLoading: boolean) => ({
+  type: SET_IS_LOADING,
+  payload: isLoading,
+});
+
+// INITIAL STATE
+interface ISearchSliceState {
+  location: string;
+  dateStart: string;
+  contractType: string;
+  guests: number;
+  isLoading: boolean;
+  dateEnd: string;
+}
+
+const initialState: ISearchSliceState = {
   location: "",
-  datestart: "",
-  contracttype: "",
+  dateStart: "",
+  contractType: "",
   guests: 0,
+  isLoading: false,
+  dateEnd: "",
 };
 
+// REDUCERS
 const searchReducer = (
-  state: guestInfo = initialstate,
-  action: setOptionAction
+  state: ISearchSliceState = initialState,
+  action: AnyAction
 ) => {
-  const payload = action.payload;
+  const { payload } = action;
+
   switch (action.type) {
-    case setOption:
+    case SET_OPTION:
       return {
         ...state,
         location: payload.location,
-        datestart: payload.datestart,
+        dateStart: payload.dateStart,
         guests: payload.guests,
       };
+
+    case SET_IS_LOADING: {
+      return {
+        ...state,
+        isLoading: payload,
+      };
+    }
+
     default:
       return { ...state };
   }
 };
+
 export default searchReducer;
+
+// SELECTORS
+// https://github.com/reduxjs/reselect
+export const selectOptionState = (rootState: RootState) => rootState.search;
+export const selectSearchIsLoading = (rootState: RootState) => selectOptionState(rootState).isLoading;

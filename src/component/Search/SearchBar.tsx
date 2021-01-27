@@ -2,8 +2,17 @@ import React, { useRef, useState } from "react";
 import { CgOverflow } from "react-icons/cg";
 import { FaSearch } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
-import { guestInfo, selectOptionState, setoption } from "../../redux/search";
+import {
+  IGuestInfo,
+  selectOptionState,
+  selectSearchIsLoading,
+  setIsLoadingAction,
+  setOptionAction,
+} from "../../redux/search";
 import "./SearchBar.css";
+
+const wait = (amount = 0) =>
+  new Promise((resolve) => setTimeout(resolve, amount));
 
 const SearchBar = () => {
   const [screensize, setScreenSize] = useState<number>(window.innerWidth);
@@ -14,16 +23,26 @@ const SearchBar = () => {
   const [guests, setGuests] = useState<number>(0);
   const dispatch = useDispatch();
   const coption = useSelector(selectOptionState);
-  const chosenOption: guestInfo = {
+  const isLoading = useSelector(selectSearchIsLoading);
+  console.log(isLoading);
+
+  const chosenOption: IGuestInfo = {
     location,
-    datestart,
-    contracttype,
+    dateStart: datestart,
+    contractType: contracttype,
     guests,
   };
-  const passOption = (event: React.FormEvent<HTMLFormElement>) => {
+
+  const onSearch = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    dispatch(setoption(chosenOption));
+    dispatch(setOptionAction(chosenOption));
+
+    dispatch(setIsLoadingAction(true));
+    await wait(2000);
+    dispatch(setIsLoadingAction(false));
+    alert("done searching");
   };
+
   const onlyNumber = (event: React.KeyboardEvent<HTMLDivElement>) => {
     // html div element is type of element keydown is attached to
     if (event.key === "e" || event.key === "+" || event.key === "-") {
@@ -32,7 +51,7 @@ const SearchBar = () => {
   };
 
   return (
-    <form onSubmit={passOption}>
+    <form onSubmit={onSearch}>
       <div className="searchBar">
         <span className="searchBarMenu">Location:</span>
         <input
@@ -95,7 +114,7 @@ const SearchBar = () => {
           required
         ></input>
         <button className="searchButton">
-          <FaSearch />
+          {isLoading ? "Loading..." : <FaSearch />}
         </button>
       </div>
     </form>
