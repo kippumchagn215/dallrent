@@ -1,0 +1,29 @@
+h2 {
+  font-size: 1000px;
+}
+.searchBar {
+  text-align: center;
+  border: solid;
+  border-color: purple;
+  border-radius: 34px;
+  width: 80%;
+  height: 40px;
+  line-height: 40px;
+  margin: 2% auto;
+}
+.searchBarMenu {
+  margin-right: 2px;
+  margin-left: 5px;
+}
+.searchInput {
+  width: 10%;
+}
+.searchButton {
+  margin-left: 0.1%;
+  width: 6%;
+}
+@media screen and (max-width: 800px) {
+  .searchBar {
+    height: 80px;
+  }
+}
